@@ -18,7 +18,7 @@ public class ObjectFactory<T> {
         return obj;
     }
 
-    public T register(String type,Class<T> cls, Object... params){
+    public T register(String type,Class<? extends T> cls, Object... params){
         T obj = Singleton.get(cls, params);
         return register(type,obj);
     }
