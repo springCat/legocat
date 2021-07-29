@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class ConcurrencyStrategy extends GroupStrategyA {
 
-
     private long timeoutMillis = 5000;
 
     private ExecutorService pool = ExecutorBuilder
@@ -26,6 +25,22 @@ public class ConcurrencyStrategy extends GroupStrategyA {
             .setCorePoolSize(1)
             .setMaxPoolSize(Runtime.getRuntime().availableProcessors())
             .build();
+
+    public long getTimeoutMillis() {
+        return timeoutMillis;
+    }
+
+    public void setTimeoutMillis(long timeoutMillis) {
+        this.timeoutMillis = timeoutMillis;
+    }
+
+    public ExecutorService getPool() {
+        return pool;
+    }
+
+    public void setPool(ExecutorService pool) {
+        this.pool = pool;
+    }
 
     @Override
     public boolean invoke(StrategyContext context) {
