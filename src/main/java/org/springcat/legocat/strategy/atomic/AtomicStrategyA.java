@@ -1,9 +1,9 @@
-package org.springcat.legocat.strategy.single;
+package org.springcat.legocat.strategy.atomic;
 
 import org.springcat.legocat.strategy.BaseStrategyI;
 
 /**
- * @Description AssembleStrategyA
+ * @Description GroupStrategyA
  * @Author springCat
  * @Date 2021-7-28 14:48
  */

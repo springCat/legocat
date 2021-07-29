@@ -1,13 +1,13 @@
-package org.springcat.legocat.strategy.assemble;
+package org.springcat.legocat.strategy.group;
 
 import org.springcat.legocat.strategy.BaseStrategyI;
 
 /**
- * @Description AssembleStrategyA
+ * @Description GroupStrategyA
  * @Author springCat
  * @Date 2021-7-28 14:48
  */
-public abstract class AssembleStrategyA implements BaseStrategyI {
+public abstract class GroupStrategyA implements BaseStrategyI {
 
     protected BaseStrategyI[] strategies;
 

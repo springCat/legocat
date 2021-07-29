@@ -1,8 +1,7 @@
 package org.springcat.legocat.strategy;
 
 import cn.hutool.core.lang.Console;
-import cn.hutool.core.lang.Dict;
-import org.springcat.legocat.strategy.single.AtomicStrategyA;
+import org.springcat.legocat.strategy.atomic.AtomicStrategyA;
 
 /**
  * @Description Red
@@ -13,8 +12,8 @@ import org.springcat.legocat.strategy.single.AtomicStrategyA;
 public class Blue extends AtomicStrategyA {
 
     @Override
-    public boolean invoke(Dict context) {
-        Console.log("blue:"+context.getStr("name"));
+    public boolean invoke(StrategyContext context) {
+        Console.log("blue:"+context.get("name"));
         return true;
     }
 }

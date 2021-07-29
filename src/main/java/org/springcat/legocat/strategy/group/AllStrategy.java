@@ -1,17 +1,17 @@
-package org.springcat.legocat.strategy.assemble;
+package org.springcat.legocat.strategy.group;
 
-import cn.hutool.core.lang.Dict;
 import org.springcat.legocat.strategy.BaseStrategyI;
+import org.springcat.legocat.strategy.StrategyContext;
 
 /**
  * @Description AllStrategy
  * @Author springCat
  * @Date 2021-7-28 14:54
  */
-public class AllStrategy extends AssembleStrategyA{
+public class AllStrategy extends GroupStrategyA {
 
     @Override
-    public boolean invoke(Dict context) {
+    public boolean invoke(StrategyContext context) {
         for (BaseStrategyI strategy : strategies) {
             strategy.invoke(context);
         }

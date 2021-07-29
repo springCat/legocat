@@ -1,6 +1,6 @@
 package org.springcat.legocat.strategy;
 
-import org.springcat.legocat.strategy.assemble.FastSucceedStrategy;
+import org.springcat.legocat.strategy.group.FastSucceedStrategy;
 
 /**
  * @Description RedBlue

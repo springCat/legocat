@@ -2,13 +2,12 @@ package org.springcat.legocat.strategy;
 
 import cn.hutool.core.annotation.AnnotationUtil;
 import cn.hutool.core.lang.Assert;
-import cn.hutool.core.lang.Dict;
 import cn.hutool.core.lang.Singleton;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReflectUtil;
-import org.springcat.legocat.strategy.assemble.AssembleStrategyA;
-import org.springcat.legocat.strategy.single.AtomicStrategyA;
+import org.springcat.legocat.strategy.group.GroupStrategyA;
+import org.springcat.legocat.strategy.atomic.AtomicStrategyA;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -20,9 +19,9 @@ import java.util.Set;
  */
 public class StrategyFactory {
 
-    private String packageName;
-
     private Map<String, BaseStrategyI> map = new HashMap<>();
+
+    private String packageName;
 
     public String getPackageName() {
         return packageName;
@@ -31,6 +30,8 @@ public class StrategyFactory {
     public void setPackageName(String packageName) {
         this.packageName = packageName;
     }
+
+
 
     public void init(){
         Set<Class<?>> classes = ClassUtil.scanPackageByAnnotation(getPackageName(), Strategy.class);
@@ -50,8 +51,8 @@ public class StrategyFactory {
                 return (BaseStrategyI) Singleton.get(aClass);
             }
 
-            //handle AssembleStrategyA
-            if(AssembleStrategyA.class.isAssignableFrom(aClass)) {
+            //handle GroupStrategyA
+            if(GroupStrategyA.class.isAssignableFrom(aClass)) {
                 Class<? extends BaseStrategyI>[] strategyClasses = (Class<? extends BaseStrategyI>[]) annotationValueMap.get("strategies");
                 Assert.notEmpty(strategyClasses);
                 BaseStrategyI[] subStrategies = new BaseStrategyI[strategyClasses.length];
@@ -60,7 +61,7 @@ public class StrategyFactory {
                     Assert.notNull(o);
                     subStrategies[i] = o;
                 }
-                AssembleStrategyA instance = (AssembleStrategyA) ReflectUtil.newInstance(aClass);
+                GroupStrategyA instance = (GroupStrategyA) ReflectUtil.newInstance(aClass);
                 Assert.notNull(instance);
                 ReflectUtil.setFieldValue(instance, "strategies", subStrategies);
                 return instance;
@@ -70,7 +71,7 @@ public class StrategyFactory {
 
     }
 
-    public void execute(String key, Dict context){
+    public void execute(String key, StrategyContext context){
         BaseStrategyI baseStrategyA = map.get(key);
         if(ObjectUtil.isEmpty(baseStrategyA)){
             return;
