@@ -1,5 +1,6 @@
 package org.springcat.legocat.notify;
 
+import cn.hutool.core.lang.Console;
 import org.junit.Test;
 
 /**
@@ -17,5 +18,8 @@ public class NotifyTest {
 
         Notify.send(new Happy("msg"));
         Notify.send(new Sad("msg"));
+
+        Console.log("--------------");
+        Notify.sendAsync(new Happy("msg"));
     }
 }
