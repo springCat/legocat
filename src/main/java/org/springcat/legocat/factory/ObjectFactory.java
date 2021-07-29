@@ -1,4 +1,4 @@
-package org.springcat.legocat.objects;
+package org.springcat.legocat.factory;
 
 import cn.hutool.core.lang.Singleton;
 import java.util.HashMap;

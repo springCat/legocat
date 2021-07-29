@@ -5,7 +5,7 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReflectUtil;
-import org.springcat.legocat.objects.ObjectFactory;
+import org.springcat.legocat.factory.ObjectFactory;
 import org.springcat.legocat.strategy.group.GroupStrategyA;
 import org.springcat.legocat.strategy.atomic.AtomicStrategyA;
 
