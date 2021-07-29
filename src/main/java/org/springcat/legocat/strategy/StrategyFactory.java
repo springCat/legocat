@@ -1,6 +1,7 @@
 package org.springcat.legocat.strategy;
 
 import cn.hutool.core.annotation.AnnotationUtil;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.lang.Singleton;
 import cn.hutool.core.util.ClassUtil;
@@ -8,9 +9,9 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReflectUtil;
 import org.springcat.legocat.strategy.group.GroupStrategyA;
 import org.springcat.legocat.strategy.atomic.AtomicStrategyA;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
+import java.util.concurrent.ForkJoinPool;
 
 /**
  * @Description StrategyFactory
@@ -31,7 +32,13 @@ public class StrategyFactory {
         this.packageName = packageName;
     }
 
+    public Map<String, BaseStrategyI> getMap() {
+        return map;
+    }
 
+    public void setMap(Map<String, BaseStrategyI> map) {
+        this.map = map;
+    }
 
     public void init(){
         Set<Class<?>> classes = ClassUtil.scanPackageByAnnotation(getPackageName(), Strategy.class);
@@ -40,12 +47,12 @@ public class StrategyFactory {
         }
     }
 
-    private BaseStrategyI handleStrategy(Class<?> aClass){
-        Map<String, Object> annotationValueMap = AnnotationUtil.getAnnotationValueMap(aClass, Strategy.class);
-        String key = (String) annotationValueMap.get("key");
-        Assert.notEmpty(key);
+    public BaseStrategyI handleStrategy(Class<?> aClass){
 
-        return map.computeIfAbsent(key, k -> {
+        Strategy strategy = AnnotationUtil.getAnnotation(aClass, Strategy.class);
+        Assert.notEmpty(strategy.key());
+
+        return map.computeIfAbsent(strategy.key(), k -> {
             //handle AtomicStrategyA
             if(AtomicStrategyA.class.isAssignableFrom(aClass)) {
                 return (BaseStrategyI) Singleton.get(aClass);
@@ -53,7 +60,7 @@ public class StrategyFactory {
 
             //handle GroupStrategyA
             if(GroupStrategyA.class.isAssignableFrom(aClass)) {
-                Class<? extends BaseStrategyI>[] strategyClasses = (Class<? extends BaseStrategyI>[]) annotationValueMap.get("strategies");
+                Class<? extends BaseStrategyI>[] strategyClasses = strategy.strategies();
                 Assert.notEmpty(strategyClasses);
                 BaseStrategyI[] subStrategies = new BaseStrategyI[strategyClasses.length];
                 for (int i = 0; i < strategyClasses.length; i++) {
@@ -77,6 +84,11 @@ public class StrategyFactory {
             return;
         }
         baseStrategyA.invoke(context);
+    }
+
+    public void executeAsync(String key, StrategyContext context){
+        ForkJoinPool.commonPool()
+                .execute(() -> execute( key,  context));
     }
 
 }
