@@ -21,6 +21,14 @@
             <artifactId>hutool-all</artifactId>
             <version>5.1.1</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.alibaba.cola</groupId>
+            <artifactId>cola-component-statemachine</artifactId>
+            <version>4.0.1</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>
