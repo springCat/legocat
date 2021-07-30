@@ -7,7 +7,7 @@ import cn.hutool.core.lang.Console;
  * @Author springCat
  * @Date 2021-7-29 13:39
  */
-public class SadConsumer implements Consumer<Sad> {
+public class SadConsumer extends ConsumerA<Sad> {
 
     @Override
     public void invoke(Sad message) {

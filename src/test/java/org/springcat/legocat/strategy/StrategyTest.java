@@ -8,12 +8,12 @@ public class StrategyTest {
 
     @Test
     public void test() {
-        StrategyFactory strategyFactory = new StrategyFactory();
-        strategyFactory.setPackageName("org.springcat.legocat.strategy");
-        strategyFactory.setErrorHandler(e -> Log.get().error(e));
-        strategyFactory.init();
+        StrategyFactory strategyFactory = StrategyFactory.create()
+                .setPackageName("org.springcat.legocat.strategy")
+                .setErrorHandler(e -> Log.get().error(e))
+                .init();
 
-        StrategyContext context = new StrategyContext();
+        StrategyContext context = StrategyContext.create();
         context.put("name", "xiaoming");
 
 

@@ -20,37 +20,44 @@ import java.util.concurrent.ForkJoinPool;
  */
 public class StrategyFactory extends ObjectFactory<BaseStrategyA> {
 
-    private static ExecutorService WORKER_POOL =  ForkJoinPool.commonPool();
+    private ExecutorService WORKER_POOL =  ForkJoinPool.commonPool();
 
     private String packageName;
 
     private ErrorHandler errorHandler;
 
-    public static void setExecutePool(ExecutorService pool) {
-        WORKER_POOL = pool;
+    public static StrategyFactory create(){
+        return new StrategyFactory();
+    }
+    public StrategyFactory setExecutePool(ExecutorService pool) {
+        this.WORKER_POOL = pool;
+        return this;
     }
 
     public String getPackageName() {
         return packageName;
     }
 
-    public void setPackageName(String packageName) {
+    public StrategyFactory setPackageName(String packageName) {
         this.packageName = packageName;
+        return this;
     }
 
     public ErrorHandler getErrorHandler() {
         return errorHandler;
     }
 
-    public void setErrorHandler(ErrorHandler errorHandler) {
+    public StrategyFactory setErrorHandler(ErrorHandler errorHandler) {
         this.errorHandler = errorHandler;
+        return this;
     }
 
-    public void init(){
+    public StrategyFactory init(){
         Set<Class<?>> classes = ClassUtil.scanPackageByAnnotation(getPackageName(), Strategy.class);
         for (Class<?> aClass : classes) {
             handleStrategy(aClass);
         }
+        return this;
     }
 
     public BaseStrategyA handleStrategy(Class<?> aClass){

@@ -1,8 +1,11 @@
 package org.springcat.legocat.notify;
 
+import cn.hutool.core.lang.Assert;
 import cn.hutool.core.map.multi.CollectionValueMap;
-import cn.hutool.core.map.multi.SetValueMap;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.ReflectUtil;
+import org.springcat.legocat.strategy.BaseStrategyA;
+import org.springcat.legocat.strategy.ErrorHandler;
 
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
@@ -15,35 +18,59 @@ import java.util.concurrent.ForkJoinPool;
  */
 public class Notify{
 
-    private static CollectionValueMap<Class<?>, Consumer> tableMap = new CollectionValueMap<>();
+    private CollectionValueMap<Class<?>, ConsumerA> tableMap = new CollectionValueMap<>();
 
-    private static ExecutorService WORKER_POOL =  ForkJoinPool.commonPool();
+    private ExecutorService WORKER_POOL =  ForkJoinPool.commonPool();
 
-    public static void setExecutePool(ExecutorService pool) {
-        WORKER_POOL = pool;
+    private ErrorHandler errorHandler;
+
+    public void setExecutePool(ExecutorService pool) {
+        this.WORKER_POOL = pool;
     }
 
-    public static void register(Class<?> messageType, Consumer consumer){
-        tableMap.putValue(messageType,consumer);
+    public ErrorHandler getErrorHandler() {
+        return errorHandler;
     }
 
-    public static void send(Object message){
-        Collection<Consumer> consumers = tableMap.get(message.getClass());
+    public Notify setErrorHandler(ErrorHandler errorHandler) {
+        this.errorHandler = errorHandler;
+        return this;
+    }
+
+    public static Notify create(){
+        return new Notify();
+    }
+
+    public Notify register(Class<?> messageType, Class<? extends ConsumerA> cls){
+
+        ConsumerA instance = (ConsumerA) ReflectUtil.newInstance(cls);
+        Assert.notNull(instance);
+
+        if(ObjectUtil.isNotEmpty(errorHandler)){
+            ReflectUtil.setFieldValue(instance, "errorHandler", errorHandler);
+        }
+        tableMap.putValue(messageType,instance);
+
+        return this;
+    }
+
+    public void send(Object message){
+        Collection<ConsumerA> consumers = tableMap.get(message.getClass());
         if(ObjectUtil.isEmpty(consumers)){
             return;
         }
-        for (Consumer consumer : consumers) {
-            consumer.invoke(message);
+        for (ConsumerA consumer : consumers) {
+            consumer.execute(message);
         }
     }
 
-    public static void sendAsync(Object message){
-        Collection<Consumer> consumers = tableMap.get(message.getClass());
+    public void sendAsync(Object message){
+        Collection<ConsumerA> consumers = tableMap.get(message.getClass());
         if(ObjectUtil.isEmpty(consumers)){
             return;
         }
-        for (Consumer consumer : consumers) {
-            WORKER_POOL.execute(() -> consumer.invoke(message));;
+        for (ConsumerA consumer : consumers) {
+            WORKER_POOL.execute(() -> consumer.execute(message));;
         }
     }
 

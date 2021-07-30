@@ -1,6 +1,7 @@
 package org.springcat.legocat.notify;
 
 import cn.hutool.core.lang.Console;
+import cn.hutool.log.Log;
 import org.junit.Test;
 
 /**
@@ -12,14 +13,18 @@ public class NotifyTest {
 
     @Test
     public void test(){
-        Notify.register(Happy.class,new Happy1Consumer());
-        Notify.register(Happy.class,new Happy2Consumer());
-        Notify.register(Sad.class,new SadConsumer());
+        Notify notify = Notify.create()
+                .register(Happy.class, Happy1Consumer.class)
+                .register(Happy.class, Happy2Consumer.class)
+                .register(Sad.class, SadConsumer.class)
+                .setErrorHandler(e -> {
+                    Log.get().error(e);
+                });
 
-        Notify.send(new Happy("msg"));
-        Notify.send(new Sad("msg"));
+        notify.send(new Happy("msg"));
+        notify.send(new Sad("msg"));
 
         Console.log("--------------");
-        Notify.sendAsync(new Happy("msg"));
+        notify.sendAsync(new Happy("msg"));
     }
 }

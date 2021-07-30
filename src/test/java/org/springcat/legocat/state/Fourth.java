@@ -7,10 +7,10 @@ import cn.hutool.core.lang.Console;
  * @Author springCat
  * @Date 2021-7-29 15:18
  */
-public class Fourth implements State<Msg> {
+public class Fourth extends StateA<Msg> {
 
     @Override
-    public Class<? extends State> invoke(Msg param) {
+    public Class<? extends StateA> invoke(Msg param) {
         Console.log("4");
         return null;
     }
