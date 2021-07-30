@@ -18,15 +18,17 @@ import java.util.concurrent.ForkJoinPool;
  * @Author springCat
  * @Date 2021-7-28 12:32
  */
-public class StrategyFactory extends ObjectFactory<BaseStrategyI> {
+public class StrategyFactory extends ObjectFactory<BaseStrategyA> {
 
     private static ExecutorService WORKER_POOL =  ForkJoinPool.commonPool();
+
+    private String packageName;
+
+    private ErrorHandler errorHandler;
 
     public static void setExecutePool(ExecutorService pool) {
         WORKER_POOL = pool;
     }
-
-    private String packageName;
 
     public String getPackageName() {
         return packageName;
@@ -36,6 +38,14 @@ public class StrategyFactory extends ObjectFactory<BaseStrategyI> {
         this.packageName = packageName;
     }
 
+    public ErrorHandler getErrorHandler() {
+        return errorHandler;
+    }
+
+    public void setErrorHandler(ErrorHandler errorHandler) {
+        this.errorHandler = errorHandler;
+    }
+
     public void init(){
         Set<Class<?>> classes = ClassUtil.scanPackageByAnnotation(getPackageName(), Strategy.class);
         for (Class<?> aClass : classes) {
@@ -43,12 +53,12 @@ public class StrategyFactory extends ObjectFactory<BaseStrategyI> {
         }
     }
 
-    public BaseStrategyI handleStrategy(Class<?> aClass){
+    public BaseStrategyA handleStrategy(Class<?> aClass){
 
         Strategy strategy = AnnotationUtil.getAnnotation(aClass, Strategy.class);
         Assert.notEmpty(strategy.key());
 
-        BaseStrategyI baseStrategy = get(strategy.key());
+        BaseStrategyA baseStrategy = get(strategy.key());
 
         //already handled
         if(ObjectUtil.isNotEmpty(baseStrategy)){
@@ -57,24 +67,21 @@ public class StrategyFactory extends ObjectFactory<BaseStrategyI> {
 
         //handle AtomicStrategyA
         if(AtomicStrategyA.class.isAssignableFrom(aClass)) {
-            return register(strategy.key(), (Class<BaseStrategyI>) aClass);
+            return register(strategy.key(), newInstance(aClass,errorHandler,null));
         }
 
         //handle GroupStrategyA
         if(GroupStrategyA.class.isAssignableFrom(aClass)) {
-            Class<? extends BaseStrategyI>[] strategyClasses = strategy.strategies();
+            Class<? extends BaseStrategyA>[] strategyClasses = strategy.strategies();
             Assert.notEmpty(strategyClasses);
-            BaseStrategyI[] subStrategies = new BaseStrategyI[strategyClasses.length];
+            BaseStrategyA[] subStrategies = new BaseStrategyA[strategyClasses.length];
             for (int i = 0; i < strategyClasses.length; i++) {
-                BaseStrategyI o = handleStrategy(strategyClasses[i]);
+                BaseStrategyA o = handleStrategy(strategyClasses[i]);
                 Assert.notNull(o);
                 subStrategies[i] = o;
             }
-            GroupStrategyA instance = (GroupStrategyA) ReflectUtil.newInstance(aClass);
-            Assert.notNull(instance);
-            ReflectUtil.setFieldValue(instance, "strategies", subStrategies);
-
-            register(strategy.key(),instance);
+            BaseStrategyA instance = newInstance(aClass,errorHandler,subStrategies);
+            register(strategy.key(),newInstance(aClass,errorHandler,subStrategies));
             return instance;
         }
 
@@ -82,12 +89,27 @@ public class StrategyFactory extends ObjectFactory<BaseStrategyI> {
         return null;
     }
 
+    private BaseStrategyA newInstance(Class<?> aClass,ErrorHandler errorHandler,BaseStrategyA[] strategies){
+        BaseStrategyA instance = (BaseStrategyA) ReflectUtil.newInstance(aClass);
+        Assert.notNull(instance);
+
+        if(ObjectUtil.isNotEmpty(errorHandler)){
+            ReflectUtil.setFieldValue(instance, "errorHandler", errorHandler);
+        }
+
+        if(ObjectUtil.isNotEmpty(strategies)){
+            ReflectUtil.setFieldValue(instance, "strategies", strategies);
+        }
+
+        return instance;
+    }
+
     public void execute(String key, StrategyContext context){
-        BaseStrategyI baseStrategyA = get(key);
+        BaseStrategyA baseStrategyA = get(key);
         if(ObjectUtil.isEmpty(baseStrategyA)){
             return;
         }
-        baseStrategyA.invoke(context);
+        baseStrategyA.execute(context);
     }
 
     public void executeAsync(String key, StrategyContext context){

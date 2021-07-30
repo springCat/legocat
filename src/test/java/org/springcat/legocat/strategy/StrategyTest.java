@@ -1,6 +1,7 @@
 package org.springcat.legocat.strategy;
 
 import cn.hutool.core.lang.Console;
+import cn.hutool.log.Log;
 import org.junit.Test;
 
 public class StrategyTest {
@@ -9,6 +10,7 @@ public class StrategyTest {
     public void test() {
         StrategyFactory strategyFactory = new StrategyFactory();
         strategyFactory.setPackageName("org.springcat.legocat.strategy");
+        strategyFactory.setErrorHandler(e -> Log.get().error(e));
         strategyFactory.init();
 
         StrategyContext context = new StrategyContext();

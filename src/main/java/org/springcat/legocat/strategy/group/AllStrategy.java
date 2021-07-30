@@ -1,6 +1,6 @@
 package org.springcat.legocat.strategy.group;
 
-import org.springcat.legocat.strategy.BaseStrategyI;
+import org.springcat.legocat.strategy.BaseStrategyA;
 import org.springcat.legocat.strategy.StrategyContext;
 
 /**
@@ -12,7 +12,7 @@ public class AllStrategy extends GroupStrategyA {
 
     @Override
     public boolean invoke(StrategyContext context) {
-        for (BaseStrategyI strategy : strategies) {
+        for (BaseStrategyA strategy : strategies) {
             strategy.invoke(context);
         }
         return true;

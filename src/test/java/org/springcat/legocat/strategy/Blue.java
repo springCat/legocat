@@ -14,6 +14,8 @@ public class Blue extends AtomicStrategyA {
     @Override
     public boolean invoke(StrategyContext context) {
         Console.log("blue:"+context.get("name"));
-        return true;
+
+        throw new RuntimeException("exception test");
+//        return true;
     }
 }

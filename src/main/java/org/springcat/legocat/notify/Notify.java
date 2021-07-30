@@ -15,7 +15,7 @@ import java.util.concurrent.ForkJoinPool;
  */
 public class Notify{
 
-    private static CollectionValueMap<Class<?>, Consumer> tableMap = new SetValueMap();
+    private static CollectionValueMap<Class<?>, Consumer> tableMap = new CollectionValueMap<>();
 
     private static ExecutorService WORKER_POOL =  ForkJoinPool.commonPool();
 
