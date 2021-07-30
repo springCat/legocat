@@ -1,7 +1,7 @@
 package org.springcat.legocat.filter;
 
 import cn.hutool.core.lang.Console;
-import cn.hutool.log.Log;
+import cn.hutool.core.util.StrUtil;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -16,23 +16,24 @@ public class FilterTest {
 
     @Test
     public void test() throws Exception {
-
-        Optional<Object> o = Filter.create().before(context -> {
+        Invoker<String> filter = Invoker.create();
+        Optional<String> o = filter.step(context -> {
+            context.set("key1","value1");
             Console.log("before1");
-            return true;
-        }).before(context -> {
+        }).step(context -> {
             Console.log("before2");
-            return true;
+            Console.log(context.getStr("key1"));
         }).invoker(dict -> {
             new Duck().bark();
-            return true;
-        }).after(context -> {
+            return "ssss";
+        }).step(context -> {
             Console.log("afer1");
-            throw new RuntimeException("exception test");
-        })
-           .after(context -> Console.log("afer1"))
-            .errorHandler(e -> Console.log(e))
-             .get();
+            Console.log("result");
+        }).step(context ->
+            Console.log("afer2")
+        ).errorHandler((e,context) -> Console.log(e))
+          .get();
 
+        o.ifPresent(s -> Console.log(StrUtil.upperFirst(s)));
     }
 }

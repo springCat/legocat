@@ -1,5 +1,6 @@
 package org.springcat.legocat.notify;
 
+import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.lang.Console;
 import cn.hutool.log.Log;
 import org.junit.Test;
