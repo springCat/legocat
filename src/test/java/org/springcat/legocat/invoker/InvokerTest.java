@@ -1,4 +1,4 @@
-package org.springcat.legocat.filter;
+package org.springcat.legocat.invoker;
 
 import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.StrUtil;
@@ -8,11 +8,11 @@ import java.util.Optional;
 
 
 /**
- * @Description FilterTest
+ * @Description InvokerTest
  * @Author springCat
  * @Date 2021-7-29 18:15
  */
-public class FilterTest {
+public class InvokerTest {
 
     @Test
     public void test() throws Exception {

@@ -1,4 +1,4 @@
-package org.springcat.legocat.filter;
+package org.springcat.legocat.invoker;
 
 import cn.hutool.core.lang.Console;
 

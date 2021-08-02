@@ -1,8 +1,7 @@
 package org.springcat.legocat.vavr;
 
-import io.vavr.control.Try;
 import org.junit.Test;
-import org.springcat.legocat.filter.Duck;
+import org.springcat.legocat.invoker.Duck;
 
 /**
  * @Description VavrTest

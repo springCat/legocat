@@ -1,9 +1,8 @@
-package org.springcat.legocat.filter;
+package org.springcat.legocat.invoker;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -13,8 +12,6 @@ import java.util.function.Function;
  * @Date 2021-7-30 8:45
  */
 public class Invoker<T>  {
-
-    private BiConsumer<Exception,Context<T>> errorHandler;
 
     private List<Consumer<Context<T>>> decoratorList = new ArrayList<>();
 
@@ -35,11 +32,6 @@ public class Invoker<T>  {
         return this;
     }
 
-    public Invoker<T> errorHandler(BiConsumer<Exception,Context<T>> errorHandler){
-        this.errorHandler = errorHandler;
-        return this;
-    }
-
     public Optional<T> get(){
         Context<T> context = new Context<T>();
         return get(context);
@@ -54,9 +46,8 @@ public class Invoker<T>  {
                 decorator.accept(context);
             }
         }catch (Exception exception){
-            if(errorHandler != null){
-                errorHandler.accept(exception,context);
-            }
+            context.errorHandler(exception,context);
+            return Optional.ofNullable(context.recover(exception, context));
         }
         return Optional.ofNullable(context.getResult());
     }

@@ -12,8 +12,6 @@ public abstract class ConsumerA<T> {
 
     private ErrorHandler errorHandler;
 
-
-
     public ErrorHandler getErrorHandler() {
         return errorHandler;
     }

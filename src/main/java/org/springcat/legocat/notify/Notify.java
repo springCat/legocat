@@ -4,7 +4,6 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.core.map.multi.CollectionValueMap;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReflectUtil;
-import org.springcat.legocat.strategy.BaseStrategyA;
 import org.springcat.legocat.strategy.ErrorHandler;
 
 import java.util.Collection;
