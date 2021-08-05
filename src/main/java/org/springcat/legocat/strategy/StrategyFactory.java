@@ -2,10 +2,10 @@ package org.springcat.legocat.strategy;
 
 import cn.hutool.core.annotation.AnnotationUtil;
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.thread.GlobalThreadPool;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReflectUtil;
-import org.springcat.legocat.factory.ObjectFactory;
 import org.springcat.legocat.strategy.group.GroupStrategyA;
 import org.springcat.legocat.strategy.atomic.AtomicStrategyA;
 
@@ -18,9 +18,11 @@ import java.util.concurrent.ForkJoinPool;
  * @Author springCat
  * @Date 2021-7-28 12:32
  */
-public class StrategyFactory extends ObjectFactory<BaseStrategyA> {
+public class StrategyFactory{
 
-    private ExecutorService WORKER_POOL =  ForkJoinPool.commonPool();
+    private Map<String, BaseStrategyA> map = new HashMap<>();
+
+    private ExecutorService WORKER_POOL = GlobalThreadPool.getExecutor();
 
     private String packageName;
 
@@ -74,7 +76,7 @@ public class StrategyFactory extends ObjectFactory<BaseStrategyA> {
 
         //handle AtomicStrategyA
         if(AtomicStrategyA.class.isAssignableFrom(aClass)) {
-            return register(strategy.key(), newInstance(aClass,errorHandler,null));
+            return register(strategy.key(),aClass,errorHandler,null);
         }
 
         //handle GroupStrategyA
@@ -87,28 +89,10 @@ public class StrategyFactory extends ObjectFactory<BaseStrategyA> {
                 Assert.notNull(o);
                 subStrategies[i] = o;
             }
-            BaseStrategyA instance = newInstance(aClass,errorHandler,subStrategies);
-            register(strategy.key(),newInstance(aClass,errorHandler,subStrategies));
-            return instance;
+            return register(strategy.key(),aClass,errorHandler,subStrategies);
         }
-
 
         return null;
-    }
-
-    private BaseStrategyA newInstance(Class<?> aClass,ErrorHandler errorHandler,BaseStrategyA[] strategies){
-        BaseStrategyA instance = (BaseStrategyA) ReflectUtil.newInstance(aClass);
-        Assert.notNull(instance);
-
-        if(ObjectUtil.isNotEmpty(errorHandler)){
-            ReflectUtil.setFieldValue(instance, "errorHandler", errorHandler);
-        }
-
-        if(ObjectUtil.isNotEmpty(strategies)){
-            ReflectUtil.setFieldValue(instance, "strategies", strategies);
-        }
-
-        return instance;
     }
 
     public void execute(String key, StrategyContext context){
@@ -123,4 +107,23 @@ public class StrategyFactory extends ObjectFactory<BaseStrategyA> {
         WORKER_POOL.execute(() -> execute( key,  context));
     }
 
+    private BaseStrategyA register(String type,Class<?> aClass,ErrorHandler errorHandler,BaseStrategyA[] strategies){
+        BaseStrategyA instance = (BaseStrategyA) ReflectUtil.newInstance(aClass);
+        Assert.notNull(instance);
+
+        if(ObjectUtil.isNotEmpty(errorHandler)){
+            ReflectUtil.setFieldValue(instance, "errorHandler", errorHandler);
+        }
+
+        if(ObjectUtil.isNotEmpty(strategies)){
+            ReflectUtil.setFieldValue(instance, "strategies", strategies);
+        }
+
+        map.put(type, instance);
+        return instance;
+    }
+
+    public BaseStrategyA get(String type){
+        return map.get(type);
+    }
 }

@@ -2,7 +2,6 @@ package org.springcat.legocat.state;
 
 import cn.hutool.core.util.ObjectUtil;
 import org.springcat.legocat.strategy.ErrorHandler;
-import org.springcat.legocat.strategy.StrategyContext;
 
 /**
  * @Description StateA

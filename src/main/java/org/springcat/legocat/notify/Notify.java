@@ -2,6 +2,8 @@ package org.springcat.legocat.notify;
 
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.map.multi.CollectionValueMap;
+import cn.hutool.core.thread.GlobalThreadPool;
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReflectUtil;
 import org.springcat.legocat.strategy.ErrorHandler;
@@ -19,7 +21,7 @@ public class Notify{
 
     private CollectionValueMap<Class<?>, ConsumerA> tableMap = new CollectionValueMap<>();
 
-    private ExecutorService WORKER_POOL =  ForkJoinPool.commonPool();
+    private ExecutorService WORKER_POOL = GlobalThreadPool.getExecutor();
 
     private ErrorHandler errorHandler;
 
@@ -42,7 +44,7 @@ public class Notify{
 
     public Notify register(Class<?> messageType, Class<? extends ConsumerA> cls){
 
-        ConsumerA instance = (ConsumerA) ReflectUtil.newInstance(cls);
+        ConsumerA instance = ReflectUtil.newInstance(cls);
         Assert.notNull(instance);
 
         if(ObjectUtil.isNotEmpty(errorHandler)){
