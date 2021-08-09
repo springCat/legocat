@@ -15,10 +15,16 @@ public class NotifyTest {
     @Test
     public void test(){
         Notify notify = Notify.create()
-                .register(Happy.class, Happy1Consumer.class)
-                .register(Happy.class, Happy2Consumer.class)
-                .register(Sad.class, SadConsumer.class)
-                .setErrorHandler(e -> {
+                .register(Happy.class, happy ->{
+                    Console.log("happy1:"+happy.getMsg());
+                })
+                .register(Happy.class, happy ->{
+                    Console.log("happy2:"+happy.getMsg());
+                })
+                .register(Sad.class, sad ->{
+                    Console.log("sad:"+sad.getMsg());
+                })
+                .setErrorHandler((e,context) -> {
                     Log.get().error(e);
                 });
 

@@ -1,7 +1,7 @@
 package org.springcat.legocat.state;
 
 import cn.hutool.core.lang.Singleton;
-import org.springcat.legocat.strategy.ErrorHandler;
+import org.springcat.legocat.common.ErrorHandler;
 
 /**
  * @Description StateTransformer
@@ -12,9 +12,9 @@ public class StateTransformer<T>{
 
     private ErrorHandler errorHandler;
 
-    private Class<? extends StateA> startState;
+    private Class<? extends StateI> startState;
 
-    public StateTransformer(Class<? extends StateA> startState) {
+    public StateTransformer(Class<? extends StateI> startState) {
         this.startState = startState;
     }
 
@@ -27,11 +27,17 @@ public class StateTransformer<T>{
     }
 
     public void start(T param){
-        Class<? extends StateA> cls = startState;
-        while (cls != null){
-            StateA<T> state = Singleton.get(cls);
-            cls = state.execute(param);
+        Class<? extends StateI> cls = startState;
+
+        try {
+            while (cls != null){
+                StateI<T> state = Singleton.get(cls);
+                cls = state.invoke(param);
+            }
+        }catch (Exception e){
+            errorHandler.execute(e);
         }
+
     }
 
 }

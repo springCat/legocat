@@ -1,8 +1,11 @@
 package org.springcat.legocat.invoker;
 
+import org.springcat.legocat.common.DictContext;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -13,18 +16,20 @@ import java.util.function.Function;
  */
 public class Invoker<T>  {
 
-    private List<Consumer<Context<T>>> decoratorList = new ArrayList<>();
+    private BiConsumer<Exception, DictContext<T>> errorHandler;
+
+    private List<Consumer<DictContext<T>>> decoratorList = new ArrayList<>();
 
     public static <T> Invoker<T> create(){
         return new Invoker<T>();
     }
 
-    public Invoker<T> step(Consumer<Context<T>> consumer){
+    public Invoker<T> step(Consumer<DictContext<T>> consumer){
         decoratorList.add(consumer);
         return this;
     }
 
-    public Invoker<T> invoker(Function<Context<T>,T> invoker){
+    public Invoker<T> invoker(Function<DictContext<T>,T> invoker){
         decoratorList.add(context -> {
             T result = invoker.apply(context);
             context.setResult(result);
@@ -32,22 +37,26 @@ public class Invoker<T>  {
         return this;
     }
 
+    public Invoker<T> errorHandler(BiConsumer<Exception, DictContext<T>> errorHandler){
+        this.errorHandler = errorHandler;
+        return this;
+    }
+
     public Optional<T> get(){
-        Context<T> context = new Context<T>();
+        DictContext<T> context = new DictContext<T>();
         return get(context);
     }
 
-    public Optional<T> get(Context<T> context){
+    public Optional<T> get(DictContext<T> context){
         try {
-            for (Consumer<Context<T>> decorator : decoratorList) {
+            for (Consumer<DictContext<T>> decorator : decoratorList) {
                 if(context.isFinish()){
                     return Optional.empty();
                 }
                 decorator.accept(context);
             }
         }catch (Exception exception){
-            context.errorHandler(exception,context);
-            return Optional.ofNullable(context.recover(exception, context));
+            errorHandler.accept(exception,context);
         }
         return Optional.ofNullable(context.getResult());
     }

@@ -3,6 +3,7 @@ package org.springcat.legocat.strategy;
 import cn.hutool.core.lang.Console;
 import cn.hutool.log.Log;
 import org.junit.Test;
+import org.springcat.legocat.common.ConcurrentContext;
 
 public class StrategyTest {
 
@@ -10,10 +11,9 @@ public class StrategyTest {
     public void test() {
         StrategyFactory strategyFactory = StrategyFactory.create()
                 .setPackageName("org.springcat.legocat.strategy")
-                .setErrorHandler(e -> Log.get().error(e))
                 .init();
 
-        StrategyContext context = StrategyContext.create();
+        ConcurrentContext context = new ConcurrentContext();
         context.put("name", "xiaoming");
 
 

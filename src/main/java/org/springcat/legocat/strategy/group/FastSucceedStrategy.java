@@ -1,7 +1,7 @@
 package org.springcat.legocat.strategy.group;
 
-import org.springcat.legocat.strategy.BaseStrategyA;
-import org.springcat.legocat.strategy.StrategyContext;
+import org.springcat.legocat.strategy.BaseStrategyI;
+import org.springcat.legocat.common.ConcurrentContext;
 
 /**
  * @Description AllStrategy
@@ -11,9 +11,9 @@ import org.springcat.legocat.strategy.StrategyContext;
 public class FastSucceedStrategy extends GroupStrategyA {
 
     @Override
-    public boolean invoke(StrategyContext context) {
-        for (BaseStrategyA strategy : strategies) {
-            if(strategy.invoke(context)){
+    public boolean invoke(ConcurrentContext context) {
+        for (BaseStrategyI strategy : getStrategies()) {
+            if(strategy.execute(context)){
                 return true;
             }
         }

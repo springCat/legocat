@@ -1,21 +1,21 @@
 package org.springcat.legocat.strategy.group;
 
-import org.springcat.legocat.strategy.BaseStrategyA;
+import org.springcat.legocat.strategy.BaseStrategyI;
 
 /**
  * @Description GroupStrategyA
  * @Author springCat
  * @Date 2021-7-28 14:48
  */
-public abstract class GroupStrategyA extends BaseStrategyA {
+public abstract class GroupStrategyA implements BaseStrategyI {
 
-    protected BaseStrategyA[] strategies;
+    protected BaseStrategyI[] strategies;
 
-    public BaseStrategyA[] getStrategies() {
+    public BaseStrategyI[] getStrategies() {
         return strategies;
     }
 
-    public void setStrategies(BaseStrategyA[] strategies) {
+    public void setStrategies(BaseStrategyI[] strategies) {
         this.strategies = strategies;
     }
 }

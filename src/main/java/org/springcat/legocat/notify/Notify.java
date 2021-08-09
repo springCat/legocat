@@ -1,16 +1,12 @@
 package org.springcat.legocat.notify;
 
-import cn.hutool.core.lang.Assert;
 import cn.hutool.core.map.multi.CollectionValueMap;
 import cn.hutool.core.thread.GlobalThreadPool;
-import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.ReflectUtil;
-import org.springcat.legocat.strategy.ErrorHandler;
-
+import org.springcat.legocat.common.ErrorHandler;
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ForkJoinPool;
+import java.util.function.Consumer;
 
 /**
  * @Description Notify
@@ -19,7 +15,7 @@ import java.util.concurrent.ForkJoinPool;
  */
 public class Notify{
 
-    private CollectionValueMap<Class<?>, ConsumerA> tableMap = new CollectionValueMap<>();
+    private CollectionValueMap<Class<?>, Consumer> tableMap = new CollectionValueMap<>();
 
     private ExecutorService WORKER_POOL = GlobalThreadPool.getExecutor();
 
@@ -42,38 +38,40 @@ public class Notify{
         return new Notify();
     }
 
-    public Notify register(Class<?> messageType, Class<? extends ConsumerA> cls){
-
-        ConsumerA instance = ReflectUtil.newInstance(cls);
-        Assert.notNull(instance);
-
-        if(ObjectUtil.isNotEmpty(errorHandler)){
-            ReflectUtil.setFieldValue(instance, "errorHandler", errorHandler);
-        }
-        tableMap.putValue(messageType,instance);
-
+    public <T> Notify register(Class<T> messageType, Consumer<T> consumer){
+        tableMap.putValue(messageType,consumer);
         return this;
     }
 
     public void send(Object message){
-        Collection<ConsumerA> consumers = tableMap.get(message.getClass());
+        Collection<Consumer> consumers = tableMap.get(message.getClass());
         if(ObjectUtil.isEmpty(consumers)){
             return;
         }
-        for (ConsumerA consumer : consumers) {
-            consumer.execute(message);
+
+        for (Consumer consumer : consumers) {
+            try {
+                consumer.accept(message);
+            }catch (Exception e){
+                errorHandler.execute(e);
+            }
         }
     }
 
     public void sendAsync(Object message){
-        Collection<ConsumerA> consumers = tableMap.get(message.getClass());
+        Collection<Consumer> consumers = tableMap.get(message.getClass());
         if(ObjectUtil.isEmpty(consumers)){
             return;
         }
-        for (ConsumerA consumer : consumers) {
-            WORKER_POOL.execute(() -> consumer.execute(message));;
+        for (Consumer consumer : consumers) {
+            WORKER_POOL.execute(() -> {
+                try {
+                    consumer.accept(message);
+                }catch (Exception e){
+                    errorHandler.execute(e);
+                }
+            });
         }
     }
-
 
 }

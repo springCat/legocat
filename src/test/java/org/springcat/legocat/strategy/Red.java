@@ -1,7 +1,8 @@
 package org.springcat.legocat.strategy;
 
 import cn.hutool.core.lang.Console;
-import org.springcat.legocat.strategy.atomic.AtomicStrategyA;
+import org.springcat.legocat.common.ConcurrentContext;
+import org.springcat.legocat.strategy.atomic.AtomicStrategyI;
 
 /**
  * @Description Red
@@ -9,10 +10,10 @@ import org.springcat.legocat.strategy.atomic.AtomicStrategyA;
  * @Date 2021-7-28 16:12
  */
 @Strategy(key = "red")
-public class Red extends AtomicStrategyA {
+public class Red extends AtomicStrategyI {
 
     @Override
-    public boolean invoke(StrategyContext context) {
+    public boolean invoke(ConcurrentContext context) {
         Console.log("red:"+context.get("name"));
         return true;
     }

@@ -23,7 +23,7 @@ public class InvokerTest {
         }).step(context -> {
             Console.log("before2");
             Console.log(context.getStr("key1"));
-        }).invoker(dict -> {
+        }).invoker(context -> {
             new Duck().bark();
             return "ssss";
         }).step(context -> {

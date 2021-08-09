@@ -3,8 +3,8 @@ package org.springcat.legocat.strategy.group;
 import cn.hutool.core.thread.ExecutorBuilder;
 import cn.hutool.core.thread.ThreadFactoryBuilder;
 
-import org.springcat.legocat.strategy.BaseStrategyA;
-import org.springcat.legocat.strategy.StrategyContext;
+import org.springcat.legocat.strategy.BaseStrategyI;
+import org.springcat.legocat.common.ConcurrentContext;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -43,14 +43,13 @@ public class ConcurrencyStrategy extends GroupStrategyA {
     }
 
     @Override
-    public boolean invoke(StrategyContext context) {
+    public boolean invoke(ConcurrentContext context) {
+        BaseStrategyI[] strategies = getStrategies();
         CountDownLatch countDownLatch = new CountDownLatch(strategies.length);
-        for (BaseStrategyA strategy : strategies) {
+        for (BaseStrategyI strategy : strategies) {
             pool.submit(() -> {
                 try {
-                    strategy.invoke(context);
-                }catch(Exception exception){
-                    strategy.errorHandler(exception);
+                    strategy.execute(context);
                 }finally {
                     countDownLatch.countDown();
                 }

@@ -6,12 +6,14 @@ import cn.hutool.core.thread.GlobalThreadPool;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReflectUtil;
+import cn.hutool.log.Log;
+import org.springcat.legocat.common.ConcurrentContext;
+import org.springcat.legocat.common.ConcurrentErrorHandler;
 import org.springcat.legocat.strategy.group.GroupStrategyA;
-import org.springcat.legocat.strategy.atomic.AtomicStrategyA;
+import org.springcat.legocat.strategy.atomic.AtomicStrategyI;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ForkJoinPool;
 
 /**
  * @Description StrategyFactory
@@ -20,13 +22,13 @@ import java.util.concurrent.ForkJoinPool;
  */
 public class StrategyFactory{
 
-    private Map<String, BaseStrategyA> map = new HashMap<>();
+    private Map<String, BaseStrategyI> map = new HashMap<>();
 
     private ExecutorService WORKER_POOL = GlobalThreadPool.getExecutor();
 
     private String packageName;
 
-    private ErrorHandler errorHandler;
+    private ConcurrentErrorHandler concurrentErrorHandler = (e, context) -> Log.get().error(e);
 
     public static StrategyFactory create(){
         return new StrategyFactory();
@@ -45,12 +47,12 @@ public class StrategyFactory{
         return this;
     }
 
-    public ErrorHandler getErrorHandler() {
-        return errorHandler;
+    public ConcurrentErrorHandler getConcurrentErrorHandler() {
+        return concurrentErrorHandler;
     }
 
-    public StrategyFactory setErrorHandler(ErrorHandler errorHandler) {
-        this.errorHandler = errorHandler;
+    public StrategyFactory setConcurrentErrorHandler(ConcurrentErrorHandler concurrentErrorHandler) {
+        this.concurrentErrorHandler = concurrentErrorHandler;
         return this;
     }
 
@@ -62,58 +64,56 @@ public class StrategyFactory{
         return this;
     }
 
-    public BaseStrategyA handleStrategy(Class<?> aClass){
+    public BaseStrategyI handleStrategy(Class<?> aClass){
 
         Strategy strategy = AnnotationUtil.getAnnotation(aClass, Strategy.class);
         Assert.notEmpty(strategy.key());
 
-        BaseStrategyA baseStrategy = get(strategy.key());
+        BaseStrategyI baseStrategy = get(strategy.key());
 
         //already handled
         if(ObjectUtil.isNotEmpty(baseStrategy)){
             return baseStrategy;
         }
 
-        //handle AtomicStrategyA
-        if(AtomicStrategyA.class.isAssignableFrom(aClass)) {
-            return register(strategy.key(),aClass,errorHandler,null);
+        //handle AtomicStrategyI
+        if(AtomicStrategyI.class.isAssignableFrom(aClass)) {
+            return register(strategy.key(),aClass,null);
         }
 
         //handle GroupStrategyA
         if(GroupStrategyA.class.isAssignableFrom(aClass)) {
-            Class<? extends BaseStrategyA>[] strategyClasses = strategy.strategies();
+            Class<? extends BaseStrategyI>[] strategyClasses = strategy.strategies();
             Assert.notEmpty(strategyClasses);
-            BaseStrategyA[] subStrategies = new BaseStrategyA[strategyClasses.length];
+            BaseStrategyI[] subStrategies = new BaseStrategyI[strategyClasses.length];
             for (int i = 0; i < strategyClasses.length; i++) {
-                BaseStrategyA o = handleStrategy(strategyClasses[i]);
+                BaseStrategyI o = handleStrategy(strategyClasses[i]);
                 Assert.notNull(o);
                 subStrategies[i] = o;
             }
-            return register(strategy.key(),aClass,errorHandler,subStrategies);
+            return register(strategy.key(),aClass,subStrategies);
         }
 
         return null;
     }
 
-    public void execute(String key, StrategyContext context){
-        BaseStrategyA baseStrategyA = get(key);
+    public void execute(String key, ConcurrentContext context){
+        BaseStrategyI baseStrategyA = get(key);
         if(ObjectUtil.isEmpty(baseStrategyA)){
             return;
         }
+        context.setConcurrentErrorHandler(concurrentErrorHandler);
         baseStrategyA.execute(context);
     }
 
-    public void executeAsync(String key, StrategyContext context){
+    public void executeAsync(String key, ConcurrentContext context){
         WORKER_POOL.execute(() -> execute( key,  context));
     }
 
-    private BaseStrategyA register(String type,Class<?> aClass,ErrorHandler errorHandler,BaseStrategyA[] strategies){
-        BaseStrategyA instance = (BaseStrategyA) ReflectUtil.newInstance(aClass);
+    private BaseStrategyI register(String type, Class<?> aClass, BaseStrategyI[] strategies){
+        BaseStrategyI instance = (BaseStrategyI) ReflectUtil.newInstance(aClass);
         Assert.notNull(instance);
 
-        if(ObjectUtil.isNotEmpty(errorHandler)){
-            ReflectUtil.setFieldValue(instance, "errorHandler", errorHandler);
-        }
 
         if(ObjectUtil.isNotEmpty(strategies)){
             ReflectUtil.setFieldValue(instance, "strategies", strategies);
@@ -123,7 +123,7 @@ public class StrategyFactory{
         return instance;
     }
 
-    public BaseStrategyA get(String type){
+    public BaseStrategyI get(String type){
         return map.get(type);
     }
 }

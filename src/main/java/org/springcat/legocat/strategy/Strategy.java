@@ -14,5 +14,6 @@ public @interface Strategy {
 
     String key();
 
-    Class<? extends BaseStrategyA>[] strategies() default {};
+    Class<? extends BaseStrategyI>[] strategies() default {};
+
 }
