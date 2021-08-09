@@ -11,7 +11,7 @@ public class StrategyTest {
                 .setPackageName("org.springcat.legocat.rule")
                 .init();
 
-        RuleContext context = new RuleContext();
+        RuleContext context = RuleContext.create();
         context.put("name", "xiaoming");
 
 

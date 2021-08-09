@@ -10,4 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class RuleContext extends ConcurrentHashMap<String,Object> {
 
+    public static RuleContext create(){
+        return new RuleContext();
+    }
 }
