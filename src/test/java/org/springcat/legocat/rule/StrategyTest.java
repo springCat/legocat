@@ -2,7 +2,6 @@ package org.springcat.legocat.rule;
 
 import cn.hutool.core.lang.Console;
 import org.junit.Test;
-import org.springcat.legocat.common.ConcurrentContext;
 
 public class StrategyTest {
 
@@ -12,7 +11,7 @@ public class StrategyTest {
                 .setPackageName("org.springcat.legocat.rule")
                 .init();
 
-        ConcurrentContext context = new ConcurrentContext();
+        RuleContext context = new RuleContext();
         context.put("name", "xiaoming");
 
 

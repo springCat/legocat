@@ -5,7 +5,7 @@ import cn.hutool.core.thread.ThreadFactoryBuilder;
 
 import org.springcat.legocat.rule.BaseRuleA;
 import org.springcat.legocat.rule.RuleI;
-import org.springcat.legocat.common.ConcurrentContext;
+import org.springcat.legocat.rule.RuleContext;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -44,7 +44,7 @@ public class ConcurrencyRule extends BaseRuleA {
     }
 
     @Override
-    public boolean invoke(ConcurrentContext context) {
+    public boolean invoke(RuleContext context) {
         RuleI[] strategies = getStrategies();
         CountDownLatch countDownLatch = new CountDownLatch(strategies.length);
         for (RuleI strategy : strategies) {

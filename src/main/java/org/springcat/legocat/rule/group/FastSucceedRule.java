@@ -2,7 +2,7 @@ package org.springcat.legocat.rule.group;
 
 import org.springcat.legocat.rule.BaseRuleA;
 import org.springcat.legocat.rule.RuleI;
-import org.springcat.legocat.common.ConcurrentContext;
+import org.springcat.legocat.rule.RuleContext;
 
 /**
  * @Description AllExecuteRule
@@ -12,7 +12,7 @@ import org.springcat.legocat.common.ConcurrentContext;
 public class FastSucceedRule extends BaseRuleA {
 
     @Override
-    public boolean invoke(ConcurrentContext context) {
+    public boolean invoke(RuleContext context) {
         for (RuleI strategy : getStrategies()) {
             if(strategy.execute(context)){
                 return true;

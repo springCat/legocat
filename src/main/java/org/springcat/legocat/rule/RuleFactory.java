@@ -7,8 +7,6 @@ import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.log.Log;
-import org.springcat.legocat.common.ConcurrentContext;
-import org.springcat.legocat.common.ConcurrentErrorHandler;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 
@@ -25,7 +23,7 @@ public class RuleFactory {
 
     private String packageName;
 
-    private ConcurrentErrorHandler concurrentErrorHandler = (e, context) -> Log.get().error(e);
+    private RuleErrorHandler concurrentErrorHandler = (e, context) -> Log.get().error(e);
 
     public static RuleFactory create(){
         return new RuleFactory();
@@ -44,7 +42,7 @@ public class RuleFactory {
         return this;
     }
 
-    public RuleFactory setConcurrentErrorHandler(ConcurrentErrorHandler concurrentErrorHandler) {
+    public RuleFactory setConcurrentErrorHandler(RuleErrorHandler concurrentErrorHandler) {
         this.concurrentErrorHandler = concurrentErrorHandler;
         return this;
     }
@@ -86,7 +84,7 @@ public class RuleFactory {
         return register(strategy.key(),aClass,subStrategies,concurrentErrorHandler);
     }
 
-    public void execute(String key, ConcurrentContext context){
+    public void execute(String key, RuleContext context){
         RuleI baseStrategyA = get(key);
         if(ObjectUtil.isEmpty(baseStrategyA)){
             return;
@@ -94,11 +92,11 @@ public class RuleFactory {
         baseStrategyA.execute(context);
     }
 
-    public void executeAsync(String key, ConcurrentContext context){
+    public void executeAsync(String key, RuleContext context){
         WORKER_POOL.execute(() -> execute( key,  context));
     }
 
-    private RuleI register(String type, Class<?> aClass, RuleI[] strategies,ConcurrentErrorHandler concurrentErrorHandler){
+    private RuleI register(String type, Class<?> aClass, RuleI[] strategies, RuleErrorHandler concurrentErrorHandler){
         RuleI instance = (RuleI) ReflectUtil.newInstance(aClass);
         Assert.notNull(instance);
 

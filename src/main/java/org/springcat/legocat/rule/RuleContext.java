@@ -1,4 +1,4 @@
-package org.springcat.legocat.common;
+package org.springcat.legocat.rule;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -8,6 +8,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Date 2021-7-30 17:48
  */
 
-public class ConcurrentContext extends ConcurrentHashMap<String,Object> {
+public class RuleContext extends ConcurrentHashMap<String,Object> {
 
 }

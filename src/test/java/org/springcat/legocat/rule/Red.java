@@ -1,7 +1,6 @@
 package org.springcat.legocat.rule;
 
 import cn.hutool.core.lang.Console;
-import org.springcat.legocat.common.ConcurrentContext;
 
 /**
  * @Description Red
@@ -12,7 +11,7 @@ import org.springcat.legocat.common.ConcurrentContext;
 public class Red extends BaseRuleA  {
 
     @Override
-    public boolean invoke(ConcurrentContext context) {
+    public boolean invoke(RuleContext context) {
         Console.log("red:"+context.get("name"));
         return true;
     }

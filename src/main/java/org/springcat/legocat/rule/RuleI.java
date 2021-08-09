@@ -1,8 +1,5 @@
 package org.springcat.legocat.rule;
 
-import cn.hutool.core.util.ObjectUtil;
-import org.springcat.legocat.common.ConcurrentContext;
-
 /**
  * @Description Rule
  * @Author springCat
@@ -14,7 +11,7 @@ public interface RuleI {
         return null;
     }
 
-    boolean invoke(ConcurrentContext context);
+    boolean invoke(RuleContext context);
 
-    boolean execute(ConcurrentContext context);
+    boolean execute(RuleContext context);
 }

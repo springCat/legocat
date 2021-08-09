@@ -1,9 +1,6 @@
 package org.springcat.legocat.rule;
 
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.log.Log;
-import org.springcat.legocat.common.ConcurrentContext;
-import org.springcat.legocat.common.ConcurrentErrorHandler;
 
 /**
  * @Description BaseRuleA
@@ -12,16 +9,15 @@ import org.springcat.legocat.common.ConcurrentErrorHandler;
  */
 public abstract class BaseRuleA implements RuleI {
 
-
     protected RuleI[] strategies;
 
-    protected ConcurrentErrorHandler concurrentErrorHandler;
+    protected RuleErrorHandler concurrentErrorHandler;
 
-    public ConcurrentErrorHandler getConcurrentErrorHandler() {
+    public RuleErrorHandler getConcurrentErrorHandler() {
         return concurrentErrorHandler;
     }
 
-    public void setConcurrentErrorHandler(ConcurrentErrorHandler concurrentErrorHandler) {
+    public void setConcurrentErrorHandler(RuleErrorHandler concurrentErrorHandler) {
         this.concurrentErrorHandler = concurrentErrorHandler;
     }
 
@@ -33,8 +29,7 @@ public abstract class BaseRuleA implements RuleI {
         this.strategies = strategies;
     }
 
-
-    public boolean execute(ConcurrentContext context){
+    public boolean execute(RuleContext context){
         try {
             return invoke(context);
         }catch (Exception e){
