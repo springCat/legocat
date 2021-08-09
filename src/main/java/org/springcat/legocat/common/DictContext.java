@@ -14,18 +14,6 @@ public class DictContext<T> extends Dict{
 
     private boolean isFinish = false;
 
-    private ErrorHandler<T> errorHandler;
-
-    public void setErrorHandler(ErrorHandler<T> errorHandler){
-        this.errorHandler = errorHandler;
-    }
-
-    public void errorHandler(Exception exception, DictContext<T> context){
-        if(errorHandler != null){
-            errorHandler.execute(exception,context);
-        }
-    }
-
     public T getResult() {
         return result;
     }
