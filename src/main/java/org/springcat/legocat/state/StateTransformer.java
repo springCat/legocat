@@ -2,6 +2,7 @@ package org.springcat.legocat.state;
 
 import cn.hutool.core.lang.Singleton;
 import org.springcat.legocat.common.ErrorHandler;
+import org.springcat.legocat.invoker.Invoker;
 
 /**
  * @Description StateTransformer
@@ -10,23 +11,22 @@ import org.springcat.legocat.common.ErrorHandler;
  */
 public class StateTransformer<T>{
 
-    private ErrorHandler errorHandler;
+    private ErrorHandler<T> errorHandler;
 
-    private Class<? extends StateI> startState;
-
-    public StateTransformer(Class<? extends StateI> startState) {
-        this.startState = startState;
-    }
-
-    public ErrorHandler getErrorHandler() {
+    public ErrorHandler<T> getErrorHandler() {
         return errorHandler;
     }
 
-    public void setErrorHandler(ErrorHandler errorHandler) {
+    public StateTransformer<T> setErrorHandler(ErrorHandler<T> errorHandler) {
         this.errorHandler = errorHandler;
+        return this;
     }
 
-    public void start(T param){
+    public static <T> StateTransformer<T> create(){
+        return new StateTransformer<T>();
+    }
+
+    public void start(Class<? extends StateI> startState,T param){
         Class<? extends StateI> cls = startState;
 
         try {
@@ -35,7 +35,7 @@ public class StateTransformer<T>{
                 cls = state.invoke(param);
             }
         }catch (Exception e){
-            errorHandler.execute(e);
+            getErrorHandler().execute(e);
         }
 
     }

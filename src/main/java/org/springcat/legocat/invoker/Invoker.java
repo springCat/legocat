@@ -2,7 +2,6 @@ package org.springcat.legocat.invoker;
 
 import org.springcat.legocat.common.DictContext;
 import org.springcat.legocat.common.ErrorHandler;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
