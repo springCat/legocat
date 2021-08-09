@@ -1,11 +1,11 @@
 package org.springcat.legocat.invoker;
 
 import org.springcat.legocat.common.DictContext;
+import org.springcat.legocat.common.ErrorHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -16,7 +16,7 @@ import java.util.function.Function;
  */
 public class Invoker<T>  {
 
-    private BiConsumer<Exception, DictContext<T>> errorHandler;
+    private ErrorHandler<T> errorHandler;
 
     private List<Consumer<DictContext<T>>> decoratorList = new ArrayList<>();
 
@@ -37,7 +37,7 @@ public class Invoker<T>  {
         return this;
     }
 
-    public Invoker<T> errorHandler(BiConsumer<Exception, DictContext<T>> errorHandler){
+    public Invoker<T> errorHandler(ErrorHandler<T> errorHandler){
         this.errorHandler = errorHandler;
         return this;
     }
@@ -56,7 +56,7 @@ public class Invoker<T>  {
                 decorator.accept(context);
             }
         }catch (Exception exception){
-            errorHandler.accept(exception,context);
+            errorHandler.execute(exception,context);
         }
         return Optional.ofNullable(context.getResult());
     }
