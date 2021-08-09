@@ -4,11 +4,11 @@ package org.springcat.legocat.common;
  * @Author springCat
  * @Date 2021-7-30 10:22
  */
-public interface ConcurrentErrorHandler<T>{
+public interface ConcurrentErrorHandler{
 
-    void execute(Exception exception, ConcurrentContext<T> context);
+    void execute(Exception exception, ConcurrentContext context);
 
     default void execute(Exception exception){
-        execute(exception,new ConcurrentContext<T>());
+        execute(exception,new ConcurrentContext());
     }
 }

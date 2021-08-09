@@ -1,4 +1,4 @@
-package org.springcat.legocat.strategy;
+package org.springcat.legocat.rule;
 
 import java.lang.annotation.*;
 
@@ -10,10 +10,10 @@ import java.lang.annotation.*;
 @Documented
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Strategy {
+public @interface Rule {
 
     String key();
 
-    Class<? extends BaseStrategyI>[] strategies() default {};
+    Class<? extends RuleI>[] strategies() default {};
 
 }

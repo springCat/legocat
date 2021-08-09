@@ -1,9 +1,10 @@
-package org.springcat.legocat.strategy.group;
+package org.springcat.legocat.rule.group;
 
 import cn.hutool.core.thread.ExecutorBuilder;
 import cn.hutool.core.thread.ThreadFactoryBuilder;
 
-import org.springcat.legocat.strategy.BaseStrategyI;
+import org.springcat.legocat.rule.BaseRuleA;
+import org.springcat.legocat.rule.RuleI;
 import org.springcat.legocat.common.ConcurrentContext;
 
 import java.util.concurrent.CountDownLatch;
@@ -11,17 +12,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @Description ConcurrencyStrategy
+ * @Description ConcurrencyRule
  * @Author springCat
  * @Date 2021-7-29 8:55
  */
-public class ConcurrencyStrategy extends GroupStrategyA {
+public class ConcurrencyRule extends BaseRuleA {
 
     private long timeoutMillis = 5000;
 
     private ExecutorService pool = ExecutorBuilder
             .create()
-            .setThreadFactory(ThreadFactoryBuilder.create().setNamePrefix("ConcurrencyStrategy").build())
+            .setThreadFactory(ThreadFactoryBuilder.create().setNamePrefix("ConcurrencyRule").build())
             .setCorePoolSize(1)
             .setMaxPoolSize(Runtime.getRuntime().availableProcessors())
             .build();
@@ -44,9 +45,9 @@ public class ConcurrencyStrategy extends GroupStrategyA {
 
     @Override
     public boolean invoke(ConcurrentContext context) {
-        BaseStrategyI[] strategies = getStrategies();
+        RuleI[] strategies = getStrategies();
         CountDownLatch countDownLatch = new CountDownLatch(strategies.length);
-        for (BaseStrategyI strategy : strategies) {
+        for (RuleI strategy : strategies) {
             pool.submit(() -> {
                 try {
                     strategy.execute(context);

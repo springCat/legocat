@@ -1,7 +1,6 @@
-package org.springcat.legocat.strategy;
+package org.springcat.legocat.rule;
 
 import cn.hutool.core.lang.Console;
-import cn.hutool.log.Log;
 import org.junit.Test;
 import org.springcat.legocat.common.ConcurrentContext;
 
@@ -9,8 +8,8 @@ public class StrategyTest {
 
     @Test
     public void test() {
-        StrategyFactory strategyFactory = StrategyFactory.create()
-                .setPackageName("org.springcat.legocat.strategy")
+        RuleFactory strategyFactory = RuleFactory.create()
+                .setPackageName("org.springcat.legocat.rule")
                 .init();
 
         ConcurrentContext context = new ConcurrentContext();
@@ -23,11 +22,9 @@ public class StrategyTest {
         strategyFactory.execute("redblue",context);
         Console.log("--------------");
 
-        strategyFactory.execute("redbluered",context);
+        strategyFactory.execute("credbluered",context);
         Console.log("--------------");
 
-        strategyFactory.executeAsync("redbluered",context);
-        Console.log("--------------");
     }
     
 }
